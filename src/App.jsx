@@ -15,6 +15,7 @@ import CustomerCatalog from "./components/CustomerCatalog.jsx";
 import CustomerCart from "./components/CustomerCart.jsx";
 import CustomerOrders from "./components/CustomerOrders.jsx";
 
+
 export default function App() {
   const [ready, setReady] = useState(false);
   const [products, setProducts] = useState([]);
@@ -54,6 +55,7 @@ export default function App() {
         setCart(c);
       }
     }
+
     setReady(true);
   }
 

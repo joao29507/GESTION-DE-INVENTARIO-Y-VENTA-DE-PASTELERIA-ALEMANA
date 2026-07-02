@@ -9,7 +9,8 @@
  * "shared" no tiene un significado especial aquí (todo vive en el mismo
  * navegador), pero se mantiene el parámetro para preservar la interfaz.
  */
-
+import { db } from "./firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 const NAMESPACE = "bh_store";
 
 function storageKey(key, shared) {
@@ -64,17 +65,27 @@ export const storage = {
 
 export async function loadData(key, shared, fallback) {
   try {
-    const res = await storage.get(key, shared);
-    if (res && res.value) return JSON.parse(res.value);
+    const ref = doc(db, "storage", storageKey(key, shared));
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      return snap.data().value;
+    }
+
+    return fallback;
   } catch (e) {
-    /* not found or invalid JSON */
+    console.error("loadData error", e);
+    return fallback;
   }
-  return fallback;
 }
 
 export async function saveData(key, shared, value) {
   try {
-    await storage.set(key, JSON.stringify(value), shared);
+    const ref = doc(db, "storage", storageKey(key, shared));
+
+    await setDoc(ref, {
+      value,
+    });
   } catch (e) {
     console.error("saveData error", e);
   }
